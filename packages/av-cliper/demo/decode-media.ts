@@ -1,4 +1,4 @@
-import { Log, Combinator } from '../src';
+import { Combinator, Log } from '../src';
 import { decodeImg, sleep } from '../src/av-utils';
 import { createChromakey } from '../src/chromakey';
 import { AudioClip, DEFAULT_AUDIO_CONF, MP4Clip } from '../src/clips';
@@ -114,6 +114,8 @@ document.querySelector('#decode-audio')?.addEventListener('click', () => {
 
 const videos = {
   'bunny.mp4': './video/bunny_0.mp4',
+  // 'bunny.mp4': './video/无法解码的视频.mp4',
+  // 'bunny.mp4': './video/正确解码的视频.mp4',
   'bear.mp4': './video/bear-vp9.mp4',
 };
 document.querySelector('#decode-video')?.addEventListener('click', () => {

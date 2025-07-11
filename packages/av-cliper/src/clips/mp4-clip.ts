@@ -595,8 +595,6 @@ async function mp4FileToSamples(otFile: OPFSToolFile, opts: MP4ClipOpts = {}) {
     sampleType: 'video' | 'audio',
   ) {
     // todo: perf 丢弃多余字段，小尺寸对象性能更好
-    // 移除 IDR 偏移量处理逻辑，让解码器自己处理完整的 NALU 数据
-    // 这样可以避免因为数据篡改导致的解码错误
     return {
       ...s,
       is_idr: sampleType === 'video' && s.is_sync,
@@ -730,7 +728,6 @@ class VideoFrameFinder {
 
     if (hasValidFrame) {
       const samples = this.samples.slice(this.#videoDecCusorIdx, endIdx);
-      // if (false) {
       if (samples[0]?.is_idr !== true) {
         Log.warn('First sample not idr frame');
       } else {

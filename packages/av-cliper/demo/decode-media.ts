@@ -1,4 +1,4 @@
-import { Log, Combinator } from '../src';
+import { Combinator, Log } from '../src';
 import { decodeImg, sleep } from '../src/av-utils';
 import { createChromakey } from '../src/chromakey';
 import { AudioClip, DEFAULT_AUDIO_CONF, MP4Clip } from '../src/clips';

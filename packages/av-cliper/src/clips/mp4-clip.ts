@@ -561,6 +561,7 @@ async function mp4FileToSamples(otFile: OPFSToolFile, opts: MP4ClipOpts = {}) {
       if (type === 'video') {
         if (videoDeltaTS === -1) videoDeltaTS = samples[0].dts;
         for (const s of samples) {
+          console.log('videoSamples');
           videoSamples.push(normalizeTimescale(s, videoDeltaTS, 'video'));
         }
       } else if (type === 'audio' && opts.audio) {
@@ -594,6 +595,7 @@ async function mp4FileToSamples(otFile: OPFSToolFile, opts: MP4ClipOpts = {}) {
     delta = 0,
     sampleType: 'video' | 'audio',
   ) {
+    console.log('normalizeTimescale');
     // todo: perf 丢弃多余字段，小尺寸对象性能更好
     return {
       ...s,

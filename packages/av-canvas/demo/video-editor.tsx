@@ -4,7 +4,7 @@ import {
   MP4Clip,
   VisibleSprite,
   renderTxt2ImgBitmap,
-} from '@webav/av-cliper';
+} from '@chunpu/av-cliper';
 import {
   Timeline,
   TimelineAction,

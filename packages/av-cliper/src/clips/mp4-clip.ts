@@ -731,38 +731,42 @@ class VideoFrameFinder {
     if (hasValidFrame) {
       const samples = this.samples.slice(this.#videoDecCusorIdx, endIdx);
       if (samples[0]?.is_idr !== true) {
-        Log.warn('First sample not idr frame');
-      } else {
-        const readStarTime = performance.now();
-        const chunks = await videosamples2Chunks(samples, this.localFileReader);
-
-        const readCost = performance.now() - readStarTime;
-        if (readCost > 1000) {
-          const first = samples[0];
-          const last = samples.at(-1)!;
-          const rangSize = last.offset + last.size - first.offset;
-          Log.warn(
-            `Read video samples time cost: ${Math.round(readCost)}ms, file chunk size: ${rangSize}`,
-          );
-        }
-        // Wait for the previous asynchronous operation to complete, at which point the task may have already been terminated
-        if (dec.state === 'closed') return;
-
-        this.#lastVfDur = chunks[0]?.duration ?? 0;
-        decodeGoP(dec, chunks, {
-          onDecodingError: (err) => {
-            if (this.#downgradeSoftDecode) {
-              throw err;
-            } else if (this.#outputFrameCnt === 0) {
-              this.#downgradeSoftDecode = true;
-              Log.warn('Downgrade to software decode');
-              this.#reset();
-            }
-          },
-        });
-
-        this.#inputChunkCnt += chunks.length;
+        Log.warn('First sample not idr frame, skipping decode');
+        // 跳过到下一个IDR帧
+        this.#videoDecCusorIdx = endIdx;
+        this.#decoding = false;
+        return;
       }
+
+      const readStarTime = performance.now();
+      const chunks = await videosamples2Chunks(samples, this.localFileReader);
+
+      const readCost = performance.now() - readStarTime;
+      if (readCost > 1000) {
+        const first = samples[0];
+        const last = samples.at(-1)!;
+        const rangSize = last.offset + last.size - first.offset;
+        Log.warn(
+          `Read video samples time cost: ${Math.round(readCost)}ms, file chunk size: ${rangSize}`,
+        );
+      }
+      // Wait for the previous asynchronous operation to complete, at which point the task may have already been terminated
+      if (dec.state === 'closed') return;
+
+      this.#lastVfDur = chunks[0]?.duration ?? 0;
+      decodeGoP(dec, chunks, {
+        onDecodingError: (err) => {
+          if (this.#downgradeSoftDecode) {
+            throw err;
+          } else if (this.#outputFrameCnt === 0) {
+            this.#downgradeSoftDecode = true;
+            Log.warn('Downgrade to software decode');
+            this.#reset();
+          }
+        },
+      });
+
+      this.#inputChunkCnt += chunks.length;
     }
     this.#videoDecCusorIdx = endIdx;
     this.#decoding = false;
@@ -786,7 +790,17 @@ class VideoFrameFinder {
     }
     this.#inputChunkCnt = 0;
     this.#outputFrameCnt = 0;
-    if (this.#dec?.state !== 'closed') this.#dec?.close();
+    this.#predecodeErr = false; // 重置预解码错误状态
+
+    // 确保解码器被正确关闭
+    if (this.#dec?.state !== 'closed') {
+      try {
+        this.#dec?.close();
+      } catch (err) {
+        // 忽略关闭时的错误
+      }
+    }
+
     const encoderConf = {
       ...this.conf,
       ...(this.#downgradeSoftDecode
@@ -822,7 +836,13 @@ class VideoFrameFinder {
         throw Error(errMsg);
       },
     });
-    this.#dec.configure(encoderConf);
+
+    try {
+      this.#dec.configure(encoderConf);
+    } catch (err) {
+      Log.error('Failed to configure VideoDecoder:', err);
+      throw err;
+    }
   };
 
   #getState = () => ({
@@ -1302,7 +1322,25 @@ function decodeGoP(
 ) {
   let i = 0;
   if (dec.state !== 'configured') return;
-  for (; i < chunks.length; i++) dec.decode(chunks[i]);
+
+  // 检查第一个chunk是否是关键帧
+  if (chunks.length > 0 && chunks[0].type !== 'key') {
+    Log.warn('First chunk is not key frame, skipping decode');
+    return;
+  }
+
+  try {
+    for (; i < chunks.length; i++) dec.decode(chunks[i]);
+  } catch (err) {
+    if (
+      err instanceof Error &&
+      err.message.includes('A key frame is required')
+    ) {
+      Log.warn('VideoDecoder requires key frame, skipping decode');
+      return;
+    }
+    throw err;
+  }
 
   // todo：flush 之后下一帧必须是 IDR 帧，是否可以根据情况再决定调用 flush？
   // windows 某些设备 flush 可能不会被 resolved，所以不能 await flush

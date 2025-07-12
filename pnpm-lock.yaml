@@ -74,13 +74,13 @@ importers:
 
   doc-site:
     dependencies:
-      '@webav/av-canvas':
+      '@chunpu/av-canvas':
         specifier: workspace:*
         version: link:../packages/av-canvas
-      '@webav/av-cliper':
+      '@chunpu/av-cliper':
         specifier: workspace:*
         version: link:../packages/av-cliper
-      '@webav/av-recorder':
+      '@chunpu/av-recorder':
         specifier: workspace:*
         version: link:../packages/av-recorder
       '@xzdarcy/react-timeline-editor':
@@ -126,22 +126,22 @@ importers:
 
   packages/av-canvas:
     dependencies:
-      '@webav/av-cliper':
+      '@chunpu/av-cliper':
         specifier: workspace:*
         version: link:../av-cliper
-      '@webav/internal-utils':
+      '@chunpu/internal-utils':
         specifier: workspace:*
         version: link:../internal-utils
     devDependencies:
+      '@chunpu/av-recorder':
+        specifier: workspace:*
+        version: link:../av-recorder
       '@types/react':
         specifier: ^18.3.1
         version: 18.3.3
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.0
-      '@webav/av-recorder':
-        specifier: workspace:*
-        version: link:../av-recorder
       '@xzdarcy/react-timeline-editor':
         specifier: ^0.1.9
         version: 0.1.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -166,7 +166,7 @@ importers:
 
   packages/av-cliper:
     dependencies:
-      '@webav/internal-utils':
+      '@chunpu/internal-utils':
         specifier: workspace:*
         version: link:../internal-utils
       '@webav/mp4box.js':
@@ -181,10 +181,10 @@ importers:
 
   packages/av-recorder:
     dependencies:
-      '@webav/av-cliper':
+      '@chunpu/av-cliper':
         specifier: workspace:*
         version: link:../av-cliper
-      '@webav/internal-utils':
+      '@chunpu/internal-utils':
         specifier: workspace:*
         version: link:../internal-utils
     devDependencies:

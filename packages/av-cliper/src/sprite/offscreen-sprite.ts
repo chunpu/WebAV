@@ -1,7 +1,7 @@
-import { BaseSprite } from './base-sprite';
-import { IClip } from '../clips';
-import { Log } from '@webav/internal-utils';
+import { Log } from '@chunpu/internal-utils';
 import { changePCMPlaybackRate } from '../av-utils';
+import { IClip } from '../clips';
+import { BaseSprite } from './base-sprite';
 
 /**
  * 包装 {@link IClip} 给素材扩展坐标、层级、透明度等信息，用于 {@link Combinator} 在后台合成视频

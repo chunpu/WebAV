@@ -1,4 +1,4 @@
-import { EventTool } from '@webav/internal-utils';
+import { EventTool } from '@chunpu/internal-utils';
 import { IRectBaseProps, Rect } from './rect';
 
 interface IAnimationOpts {

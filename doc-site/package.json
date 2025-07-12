@@ -26,9 +26,9 @@
   },
   "dependencies": {
     "@xzdarcy/react-timeline-editor": "^0.1.9",
-    "@webav/av-cliper": "workspace:*",
-    "@webav/av-canvas": "workspace:*",
-    "@webav/av-recorder": "workspace:*",
+    "@chunpu/av-cliper": "workspace:*",
+    "@chunpu/av-canvas": "workspace:*",
+    "@chunpu/av-recorder": "workspace:*",
     "antd": "^5.11.5"
   }
 }

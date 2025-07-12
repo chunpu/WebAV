@@ -1,21 +1,21 @@
+import { autoReadStream, file2stream, Log } from '@chunpu/internal-utils';
 import mp4box, {
   MP4File,
   MP4Sample,
   SampleOpts,
   TrakBoxParser,
 } from '@webav/mp4box.js';
-import { autoReadStream, file2stream, Log } from '@webav/internal-utils';
+import { tmpfile, write } from 'opfs-tools';
 import {
-  extractPCM4AudioData,
+  concatPCMFragments,
   extractPCM4AudioBuffer,
+  extractPCM4AudioData,
   mixinPCM,
   ringSliceFloat32Array,
-  concatPCMFragments,
 } from '../av-utils';
 import { DEFAULT_AUDIO_CONF } from '../clips';
-import { SampleTransform } from './sample-transform';
 import { extractFileConfig } from './mp4box-utils';
-import { tmpfile, write } from 'opfs-tools';
+import { SampleTransform } from './sample-transform';
 
 function fixMP4BoxFileDuration(
   inMP4File: MP4File,

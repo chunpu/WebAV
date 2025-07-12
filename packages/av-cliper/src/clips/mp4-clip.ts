@@ -1,4 +1,4 @@
-import { Log } from '@webav/internal-utils';
+import { Log } from '@chunpu/internal-utils';
 import { MP4Info, MP4Sample } from '@webav/mp4box.js';
 import { file, tmpfile, write } from 'opfs-tools';
 import { audioResample, extractPCM4AudioData, sleep } from '../av-utils';

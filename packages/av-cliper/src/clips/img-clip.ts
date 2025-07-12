@@ -1,4 +1,4 @@
-import { Log } from '@webav/internal-utils';
+import { Log } from '@chunpu/internal-utils';
 import { decodeImg } from '../av-utils';
 import { IClip } from './iclip';
 
